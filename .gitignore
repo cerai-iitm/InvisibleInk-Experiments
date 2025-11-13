@@ -1,0 +1,16 @@
+__pycache__/eval_utils.cpython-313.pyc
+__pycache__/utils.cpython-313.pyc
+data/mimic/embed_mimic-instr.pickle
+data/mimic/dataprep_mimic-hist.log
+data/mimic/dataprep_mimic-instr.log
+data/mimic/discharge_hist.csv
+data/mimic/discharge_instr.csv
+results/mimic-instr/invink/tinyllama1B-eps_10-batch_8-tokens_500-beta_0.3-sigma_0.01-lamb_0.0001-temp_1.0/datagen_42.log
+results/mimic-instr/invink/tinyllama1B-eps_10-batch_8-tokens_500-topk_-1-clip_0.549-temp_1.0/data_42.csv
+results/mimic-instr/invink/tinyllama1B-eps_10-batch_8-tokens_500-topk_-1-clip_0.549-temp_1.0/datagen_42.log
+results/mimic-instr/invink/tinyllama1B-eps_10-batch_8-tokens_500-topk_-1-clip_0.549-temp_1.0/results_42.pickle
+results/mimic-instr/invink/tinyllama1B-eps_10-batch_8-tokens_500-topk_100-clip_0.549-temp_1.0/data_42.csv
+results/mimic-instr/invink/tinyllama1B-eps_10-batch_8-tokens_500-topk_100-clip_0.549-temp_1.0/datagen_42.log
+results/mimic-instr/invink/tinyllama1B-eps_10-batch_8-tokens_500-topk_100-clip_0.549-temp_1.0/results_42.pickle
+data/yelp/train.csv
+data/tab/echr_train.json
