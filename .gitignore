@@ -14,3 +14,5 @@ results/mimic-instr/invink/tinyllama1B-eps_10-batch_8-tokens_500-topk_100-clip_0
 results/mimic-instr/invink/tinyllama1B-eps_10-batch_8-tokens_500-topk_100-clip_0.549-temp_1.0/results_42.pickle
 data/yelp/train.csv
 data/tab/echr_train.json
+results/mimic-instr/invink/tinyllama1B-eps_10-batch_8-tokens_500-beta_0.3-sigma_0.01-lamb_0.0001-temp_1.0/data_42.csv
+results/mimic-instr/invink/tinyllama1B-eps_10-batch_8-tokens_500-beta_0.3-sigma_0.01-lamb_0.0001-temp_1.0/results_42.pickle

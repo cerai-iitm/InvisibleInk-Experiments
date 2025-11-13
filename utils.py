@@ -310,11 +310,11 @@ def noisy_screen(pub, prv, topk=60, sigma=0.01):
     return pubs, prvs
     
 # compute Renyi Divergence
-def get_div(p, q, alpha=15):
+def get_div(p, q, alpha=15, tol=1e-12):
     if np.isinf(alpha): return np.log(np.max(p / q))
     else:
         ratio = p**alpha * q**(1-alpha)
-        sum_term = np.sum(ratio)
+        sum_term = max(np.sum(ratio), tol)
         return 1.0 / (alpha - 1.0) * np.log(sum_term)
 
 # compute symmetric Renyi Divergence

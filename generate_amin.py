@@ -19,8 +19,8 @@ MODELS = utils.MODELS
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description='Reproduce results')
-    parser.add_argument('--sess', default='InvisibleInk', type=str, help='session name')
-    parser.add_argument('--method', default='invink', type=str, help='method name')
+    parser.add_argument('--sess', default='Amin et al. (2024)', type=str, help='session name')
+    parser.add_argument('--method', default='amin', type=str, help='method name')
     
     # filepath and model arguments
     parser.add_argument('--model',  default='tinyllama1B', type=str, help='LLM name')
