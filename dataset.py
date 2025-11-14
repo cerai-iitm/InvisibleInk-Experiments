@@ -1,17 +1,9 @@
 import os
-import csv
 import json
-import torch
 import pickle
-import random
 import logging
-import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from transformers import AutoTokenizer
-from sentence_transformers import SentenceTransformer
-import matplotlib.pyplot as plt
-import seaborn as sns
 import argparse
 
 import utils
@@ -40,27 +32,6 @@ def prepare_dataset_mimic_instr(folder = './data/mimic', save=True):
         logger.info('Saving MIMIC-IV discharge summaries ....')
         df_instr = pd.DataFrame({'text':prompt_txts})
         df_instr.to_csv(os.path.join(folder, 'discharge_instr.csv'))
-    
-    logger.info('Dataset ready! Total Entries: {}'.format(len(prompt_txts)))
-    return prompt_txts
-
-# Prepare MIMIC-IV patient history dataset
-def prepare_dataset_mimic_hist(folder = './data/mimic', save=True):
-    logger.info('Reading MIMIC-IV discharge notes ....')
-    prompt_txts = []
-    df = pd.read_csv(os.path.join(folder, 'discharge.csv'))
-    
-    logger.info('Searching for patient histories ....')
-    for x in tqdm(df['text']):
-        pos3 = x.find('History of')
-        pos4 = x[pos3:].find('\n\n')
-        if pos3>=0 and pos4>=0: 
-            prompt_txts.append(utils.preprocess(x[pos3:][:pos4]))
-            
-    if save: 
-        logger.info('Saving MIMIC-IV patient histories ....')
-        df_hist = pd.DataFrame({'text':prompt_txts})
-        df_hist.to_csv(os.path.join(folder, 'discharge_hist.csv'))
     
     logger.info('Dataset ready! Total Entries: {}'.format(len(prompt_txts)))
     return prompt_txts
@@ -125,8 +96,9 @@ if __name__ == "__main__":
     ## ARGUMENTS
     parser = argparse.ArgumentParser(description='Dataset Creation')
     parser.add_argument('--sess', default='Dataset Creation', type=str, help='session name')
-    parser.add_argument('--dataset', default='mimic-instr', type=str, help='dataset name')
-    parser.add_argument('--folder',  default='./data/openreview', type=str, help='dataset folder')
+    parser.add_argument('--dataset', default='mimic', type=str, help='dataset name')
+    parser.add_argument('--folder',  default='./data/mimic', type=str, help='dataset folder')
+    parser.add_argument('--embed', action='store_true', help='whether to compute embeddings')
     parser.add_argument('--embed_model',  default='sentence-transformers/all-mpnet-base-v2', type=str, help='embedding model')
     parser.add_argument('--seed', default=42, type=int, help='random seed')
     parser.add_argument('--gpu', default=0, type=int, help='allocate GPU, -1 for CPU execution')
@@ -139,14 +111,13 @@ if __name__ == "__main__":
     logger = logging.getLogger(__name__)
     
     # prepare datasets
-    if args.dataset == 'mimic-instr': txts = prepare_dataset_mimic_instr(args.folder)
-    elif args.dataset == 'mimic-hist': txts = prepare_dataset_mimic_hist(args.folder)
+    if args.dataset == 'mimic': txts = prepare_dataset_mimic_instr(args.folder)
     elif args.dataset == 'yelp': txts = prepare_dataset_yelp(args.folder)
     elif args.dataset == 'tab': txts = prepare_dataset_tab(args.folder)
-    else: raise ValueError("Invalid Dataset: Valid options are ['mimic-instr', 'mimic-hist', 'yelp', 'tab']")
+    else: raise ValueError("Invalid Dataset: Valid options are ['mimic', 'yelp', 'tab']")
     
-
-    embed = utils.embed_txts(txts, modelname = args.embed_model, device = device)
-    with open(os.path.join(args.folder,'embed_{}.pickle'.format(args.dataset)), 'wb') as handle:
-        pickle.dump(embed, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    if args.embed:
+        embed = utils.embed_txts(txts, modelname = args.embed_model, device = device)
+        with open(os.path.join(args.folder,'embed_{}.pickle'.format(args.dataset)), 'wb') as handle:
+            pickle.dump(embed, handle, protocol=pickle.HIGHEST_PROTOCOL)
     

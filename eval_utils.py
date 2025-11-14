@@ -1,5 +1,5 @@
 """File containing utility functions for evaluation."""
-import os
+import csv
 import torch
 import mauve
 import numpy as np
@@ -20,7 +20,8 @@ NER_CATS = [
 
 # read last lines from csv file
 def read_csv_last(path, num=1000):
-    total = sum(1 for row in open(path, 'r'))
+    with open(path, 'r') as file:
+        total = sum(1 for row in csv.reader(file))
     skip_rows = range(1, total - num)
     last_rows = pd.read_csv(path, skiprows=skip_rows)
     return last_rows

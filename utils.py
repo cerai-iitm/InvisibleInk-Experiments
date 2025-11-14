@@ -9,17 +9,6 @@ import logging
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-# import os
-# import argparse
-# import pandas as pd
-# from tqdm import tqdm
-# from scipy import special as spl
-
-# from transformers import pipeline
-# import matplotlib.pyplot as plt
-# import seaborn as sns
-# sns.set_style('darkgrid')
-
 
 ############################################################################
 # MODEL GENERATION AND PROMPT TEMPLATES
@@ -37,25 +26,13 @@ PROMPT_TEMPLATE = [
 ]
 
 PROMPTS = {
-    'agnews': {
-        'prv': 'Here is a text with News Type : {}{}. \n Text : "{}" \n Please output one more similar news text of the same type.',
-        'pub': 'Please give me a text of a news article with type: {}{}',
-    },
     'yelp': {
         'prv': 'Here is a text with Business Category : {} and Review Stars : {} out of 5.0. \n Text : "{}" \n Please output one more similar review of a fictional place with same score and of the same category of business. Poor reviews have lower scores and good reviews have higher scores.',
         'pub': 'Please give me a fake Yelp customer review of a fictional business of {} with a {} out of 5. Poor reviews have lower scores and good reviews have higher scores.',
     },
-    'opr-abstract': {
-        'prv': 'Here is an technical academic journal article title and abstract. {}{}\n Text : "{}" \n Please output one more similar article title and abstract for submission to a technical journal/conference.',
-        'pub': 'Please give me an article title and abstract for submission to a technical journal/conference.{}{}',
-    },
-    'mimic-instr': {
+    'mimic': {
         'prv': 'Here is the text of the discharge summary of a patient discharged from a hospital {}{}\n Text : "{}" \n Please give me another text of a fake patient discharge summary for discharge from a hospital. Include typical sections like admitting diagnosis, major procedures (if any), discharge medications (using fictional drug names and dosages), and general follow-up instructions. Do not include any names, dates, or specific medical record numbers. The output text must begin with the exact words "Discharge Instructions:".',
         'pub': 'Please give me text of a fake patient discharge summary for discharge from a hospital {}{}. I only need fictional and representative examples for a non-medical purpose. Include typical sections like admitting diagnosis, major procedures (if any), discharge medications (using fictional drug names and dosages), and general follow-up instructions. Do not include any names, dates, or specific medical record numbers. The output text must begin with the exact words "Discharge Instructions:".',
-    },
-    'mimic-hist': {
-        'prv': 'Here is the text of a patient medical history {}{}\n Text : "{}" \n Please output text of one more patient medical history.',
-        'pub': 'Please give me text of a fake  medical history {}{}.',
     },
     'tab': {
         'prv': "Here is the text of a case transcript set before the European Court for Human Rights. {}{}\n Text : '{}' \n Please output a similar transcript of a fictional case under European Court for Human Rights. Begin with the phrase: 'PROCEDURE:\n\nThe case originated in an application'.",
@@ -153,7 +130,7 @@ def get_samples(dataset, batch = 127, category = -1, num_cats = 4, samples_per_c
     return dataset[indices]
 
 # create private prompt with private information in context
-def get_prv_prompt(input, tokenizer, category='', score='', model='tinyllama1B', dataset='mimic-instr'):
+def get_prv_prompt(input, tokenizer, category='', score='', model='tinyllama1B', dataset='mimic'):
     prompt = PROMPTS[dataset]['prv']
     template = PROMPT_TEMPLATE.copy()
     template[1]['content'] = prompt.format(category, score, input)
@@ -161,7 +138,7 @@ def get_prv_prompt(input, tokenizer, category='', score='', model='tinyllama1B',
     return prompt_txt
 
 # create public prompt with no private information in context
-def get_pub_prompt(tokenizer, category='', score='', model='tinyllama1B', dataset='mimic-instr'):
+def get_pub_prompt(tokenizer, category='', score='', model='tinyllama1B', dataset='mimic'):
     prompt = PROMPTS[dataset]['pub']
     template = PROMPT_TEMPLATE.copy()
     template[1]['content'] = prompt.format(category, score, input)
@@ -263,18 +240,6 @@ def get_epsilon(T, C, batch, tau, sig=0, delta=1e-6):
     eps = cdp_eps(rho, delta)
     return eps
 
-# compute required temperature for amin type method
-# def get_temp(eps, T, C, s, sig=0, delta=1e-6):
-#     rho_tot = cdp_rho(eps, delta)
-#     rho_tok = rho_tot/T
-#     rho_pub = 2/((s-1)*sig)**2 if sig>0  else 0
-#     if rho_pub >= rho_tok: 
-#         tau = np.inf
-#     else:
-#         rho_prv = rho_tok - rho_pub
-#         tau = C/((s-1)*np.sqrt(2*rho_prv))
-#     return tau
-
 # compute required clipping norm for InvisibleInk and Amin et al.(2024)
 def get_clip(eps, T, tau, batch, sig=0, delta=1e-6):
     rho_tot = cdp_rho(eps, delta)
@@ -331,6 +296,6 @@ def renyi_div(p, q, alpha=15):
 def embed_txts(txts, modelname = 'all-mpnet-base-v2', device = torch.device('cpu')):
     logger.info('Generating sentence-transformer embeddings ....')
     model = SentenceTransformer(modelname, device=device)
-    embed = model.encode(txts)
+    embed = model.encode(txts, batch_size=256)
     logger.info('Embeddings Generated!')
     return embed

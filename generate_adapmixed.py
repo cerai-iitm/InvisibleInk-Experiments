@@ -1,3 +1,5 @@
+'''Code to generate private synthetic data using AdaPMixED introduced in Flemings et al. (2024)'''
+
 ## IMPORT LIBRARIES
 import os
 import logging
@@ -24,24 +26,17 @@ if __name__=='__main__':
     
     # filepath and model arguments
     parser.add_argument('--model',  default='tinyllama1B', type=str, help='LLM name')
-    parser.add_argument('--dataset', default='mimic-instr', type=str, help='dataset name')
-    parser.add_argument('--datapath', default='./data/mimic/discharge_instr.csv', type=str, help='dataset name')
+    parser.add_argument('--dataset', default='mimic', type=str, help='dataset name')
     parser.add_argument('--folder',  default='./results/', type=str, help='expt results folder')
     parser.add_argument('--embed_model', default='sentence-transformers/all-mpnet-base-v2', type=str, help='embedding model')
     
     # generation arguments (common)
-    parser.add_argument('--num', default=20, type=int, help='number of synthetic generations')
+    parser.add_argument('--num', default=50, type=int, help='number of synthetic generations')
     parser.add_argument('--eps', default=10, type=float, help='privacy budget (epsilon)')
     parser.add_argument('--delta', default=1e-6, type=float, help='delta (failure probability)')
     parser.add_argument('--tokens', default=500, type=int, help='total number of tokens')
     parser.add_argument('--batch', default=8, type=int, help='batch size for generation')
     parser.add_argument('--minibatch', default=16, type=int, help='minibatch size')
-    
-    # # arguments for amin
-    # parser.add_argument('--ptokens', default=100, type=int, help='max number of private tokens')
-    # parser.add_argument('--sigma', default=0.3, type=float, help='SVT noise parameter')
-    # parser.add_argument('--theta', default=0.7, type=float, help='SVT threshold')
-    # parser.add_argument('--temp_pub', default=1.0, type=float, help='public sampling temperature')
     
     # arguments for adapmixed
     parser.add_argument('--temp', default=1.0, type=float, help='sampling temperature')
@@ -97,6 +92,11 @@ if __name__=='__main__':
 
     # load dataset and batchify
     logger.info('Get dataset: {} ....'.format(args.dataset))
+    datapath = os.path.join('./data', args.dataset)
+    if args.dataset=='mimic': real_txt_path = os.path.join(datapath, 'discharge_instr.csv')
+    elif args.dataset=='yelp': real_txt_path = os.path.join(datapath, 'train.csv')
+    elif args.dataset=='tab': real_txt_path = os.path.join(datapath, 'tab_procedure.csv')
+    else: raise ValueError('Invalid dataset name!')
     if args.dataset=='yelp':
         # load yelp labels
         yelp_labels1 = utils.yelp_labels1
@@ -105,22 +105,22 @@ if __name__=='__main__':
         
         for i, l1 in enumerate(yelp_labels1):
             for j, l2 in enumerate(yelp_labels2):
-                if not os.path.exists(os.path.join('./data/yelp', 'train_{}_{}.csv'.format(i, j))):
+                if not os.path.exists(os.path.join(datapath, 'train_{}_{}.csv'.format(i, j))):
                     raise ValueError('Dataset not found! Please run dataset.py to create the dataset')
                 
                 # number of samples should be divisible by 50
                 num_per_cat = (args.num * (args.batch-1)) // (len(yelp_labels1)*len(yelp_labels2))
                 num_batches = num_per_cat // (args.batch-1)
                 
-                df = pd.read_csv(os.path.join('./data/yelp', 'train_{}_{}.csv'.format(i, j)), nrows = num_per_cat)
+                df = pd.read_csv(os.path.join(datapath, 'train_{}_{}.csv'.format(i, j)), nrows = num_per_cat)
                 txts_cat = list(utils.batchify(df['text'], s = args.batch-1, n = num_batches))
                 labels_cat = [(i, j) for _ in range(num_batches)]
                 
                 txts += txts_cat
                 labels += labels_cat
     else:
-        if os.path.exists(args.datapath): 
-            df = pd.read_csv(args.datapath, nrows = args.batch*args.num)
+        if os.path.exists(real_txt_path): 
+            df = pd.read_csv(real_txt_path, nrows = args.batch*args.num)
         else: raise ValueError('Enter a valid path to a dataset')
         txts = list(utils.batchify(df['text'], s = args.batch-1, n = args.num))
     logger.info('Dataset Ready!\n')
@@ -271,8 +271,10 @@ if __name__=='__main__':
     logger.info('Beginning Evaluation ....')
     
     # reload the dataset and real embeddings
-    real_txt = list(eval_utils.read_csv_last(args.datapath, args.num)['text'])
-    real_embed = utils.embed_txts(real_txt, modelname = args.embed_model, device = device)
+    real_txt = list(eval_utils.read_csv_last(real_txt_path, args.num)['text'])
+    if os.path.exists(os.path.join(datapath, 'embed_{}.pickle'.format(args.dataset))):
+        real_embed = utils.pickle_load(os.path.join(datapath, 'embed_{}.pickle'.format(args.dataset)))
+    else: real_embed = utils.embed_txts(real_txt, modelname = args.embed_model, device = device)
     
     # get synthetic texts and embeddings
     syn_txt = reload_txts
@@ -289,7 +291,7 @@ if __name__=='__main__':
     # calculate PPL scores
     real_ppl = eval_utils.compute_ppl(real_txt, model_id='gpt2', batch_size = 8, device=device, max_length=512)
     syn_ppl = eval_utils.compute_ppl(syn_txt, model_id='gpt2', batch_size = 8, device=device, max_length=512)
-    diff_ppl = syn_ppl['mean_perplexity'] - real_ppl['mean_perplexity']
+    diff_ppl = np.abs(syn_ppl['mean_perplexity'] - real_ppl['mean_perplexity'])
     logging.info('DeltaPPL (GenPPL - RealPPL): {:.4f}\n'.format(diff_ppl))
     
     # additional important statistics
