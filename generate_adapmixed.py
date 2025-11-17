@@ -38,7 +38,7 @@ if __name__=='__main__':
     parser.add_argument('--batch', default=8, type=int, help='batch size for generation')
     parser.add_argument('--minibatch', default=16, type=int, help='minibatch size')
     
-    # arguments for adapmixed
+    # arguments for adapmixed (defaults from the paper for PubMed dataset; details in App. D5)
     parser.add_argument('--temp', default=1.0, type=float, help='sampling temperature')
     parser.add_argument('--topk', default=60, type=int, help='k for top-k sampling; -1 for full vocabulary')
     parser.add_argument('--thresh', default=4.5, type=float, help='threshold for noisy screening')
@@ -50,7 +50,7 @@ if __name__=='__main__':
     
     # util arguments
     parser.add_argument('--seed', default=42, type=int, help='random seed')
-    parser.add_argument('--gpu', default=3, type=int, help='allocate GPU, -1 for CPU execution')
+    parser.add_argument('--gpu', default=0, type=int, help='allocate GPU, -1 for CPU execution')
     parser.add_argument('--write_every', default=50, type=int, help='number of iterations')
     args = parser.parse_args()
     

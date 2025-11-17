@@ -48,7 +48,7 @@ if __name__=='__main__':
     
     # util arguments
     parser.add_argument('--seed', default=42, type=int, help='random seed')
-    parser.add_argument('--gpu', default=3, type=int, help='allocate GPU, -1 for CPU execution')
+    parser.add_argument('--gpu', default=0, type=int, help='allocate GPU, -1 for CPU execution')
     parser.add_argument('--write_every', default=50, type=int, help='number of iterations')
     args = parser.parse_args()
     

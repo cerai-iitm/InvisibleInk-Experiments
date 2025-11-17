@@ -310,7 +310,7 @@ if __name__ == "__main__":
     parser.add_argument('--warmup_frac', default=0.1, type=float, help='warmup steps fraction')
     parser.add_argument('--weight_decay', default=0.01, type=float, help='weight decay')
     parser.add_argument('--seed', default=42, type=int, help='random seed')
-    parser.add_argument('--gpu', default=3, type=int, help='GPU device, -1 for CPU')
+    parser.add_argument('--gpu', default=0, type=int, help='GPU device, -1 for CPU')
     
     args = parser.parse_args()
     
