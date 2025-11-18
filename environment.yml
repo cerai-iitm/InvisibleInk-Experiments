@@ -6,6 +6,7 @@ channels:
 dependencies:
   - python=3.13.2
   - pip:
+      - gdown==5.2.0
       - datasets==3.4.1
       - huggingface-hub==0.35.3
       - mauve-text==0.4.0
@@ -19,4 +20,3 @@ dependencies:
       - torch==2.6.0
       - tqdm==4.67.1
       - transformers==4.57.0
-prefix: /home/vishnuvd/miniconda3/envs/llm

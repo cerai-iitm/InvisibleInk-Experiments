@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -exu
+set -u
 
 # set eval params
 name='roberta_yelp50class'

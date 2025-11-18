@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xu
+set -u
 
 # set method and results folder
 method="amin"
@@ -10,30 +10,45 @@ write=100
 
 # setting common options
 options="--method=$method --write_every=$write --folder=$folder --embed_model=$embed"
+NO_MIMIC="false"
 
-
-# All MIMIC generations using TinyLLaMA 1B
-dataset="mimic"
-model="tinyllama1B"
-num=1000
-toks=500
-ptoks=100
-
-# for k = |V| (full vocabulary generations)
-for temp in 0.8 1.0 1.2
-do
-for eps in 10 5 3 1
-do
-for batch in 32 64 128
-do
-for seed in 0 1 2
-do
-    time python3 -u generate_amin.py --model=$model --dataset=$dataset --eps=$eps --temp=$temp --batch=$batch --num=$num --seed=$seed --tokens=$toks --ptokens=$ptoks $options
-done 
-done
-done
+# check for the --nomimic flag in the arguments
+for arg in "$@"; do
+    shift
+    case "$arg" in
+        --nomimic) NO_MIMIC="true" ;;
+        *) set -- "$@" "$arg";;
+    esac
 done
 
+
+if [[ "$NO_MIMIC" == "true" ]]; then
+    echo "Skipping MIMIC dataset generation"
+else
+
+    # All MIMIC generations using TinyLLaMA 1B
+    dataset="mimic"
+    model="tinyllama1B"
+    num=1000
+    toks=500
+    ptoks=100
+    minibatch=16
+
+    # for k = |V| (full vocabulary generations)
+    for temp in 0.8 1.0 1.2
+    do
+    for eps in 10 5 3 1
+    do
+    for batch in 32 64 128
+    do
+    for seed in 0 1 2
+    do
+        time python3 -u generate_amin.py --model=$model --dataset=$dataset --eps=$eps --temp=$temp --batch=$batch --minibatch=$minibatch --num=$num --seed=$seed --tokens=$toks --ptokens=$ptoks $options
+    done 
+    done
+    done
+    done
+fi
 
 # All YELP generations using TinyLLaMA 1B
 dataset="yelp"
@@ -42,6 +57,7 @@ num=500
 toks=200
 ptoks=100
 seed=42
+minibatch=16
 
 # for k = |V| (full vocabulary generations)
 for temp in 0.8 1.0 1.2
@@ -50,7 +66,7 @@ for eps in 10 5 3 1
 do
 for batch in 32 64 128
 do
-    time python3 -u generate_amin.py --model=$model --dataset=$dataset --eps=$eps --temp=$temp --batch=$batch --num=$num --seed=$seed --tokens=$toks --ptokens=$ptoks $options
+    time python3 -u generate_amin.py --model=$model --dataset=$dataset --eps=$eps --temp=$temp --batch=$batch --minibatch=$minibatch --num=$num --seed=$seed --tokens=$toks --ptokens=$ptoks $options
 done
 done
 done
@@ -63,10 +79,11 @@ toks=500
 ptoks=100
 temp=1.2
 batch=8
+minibatch=8
 seed=42
 
 # for k = |V| (full vocabulary generations)
 for eps in 10 5 3 1
 do
-    time python3 -u generate_amin.py --model=$model --dataset=$dataset --eps=$eps --temp=$temp --batch=$batch --num=$num --seed=$seed --tokens=$toks --ptokens=$ptoks $options
+    time python3 -u generate_amin.py --model=$model --dataset=$dataset --eps=$eps --temp=$temp --batch=$batch --minibatch=$minibatch --num=$num --seed=$seed --tokens=$toks --ptokens=$ptoks $options
 done

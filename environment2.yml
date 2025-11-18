@@ -4,4 +4,3 @@ channels:
   - https://repo.anaconda.com/pkgs/r
 dependencies:
   - pip
-prefix: /home/vishnuvd/miniconda3/envs/llm
