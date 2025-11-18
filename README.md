@@ -16,11 +16,11 @@ The repository contains scripts for private text generation and evaluation to re
 
 We use the following datasets for our experiments:
 
-1. MIMIC IV Clinical Notes Dataset (MIMIC): The MIMIC Notes dataset contains anonymized patient discharge notes. The dataset can be accessed [here](https://physionet.org/content/mimic-iv-note/2.2/), after obtaining the requisite credentials, signing the Data Use Agreement, and completing the reqired training programs. We note that we do not release actual samples from the data or synthetic generations, to comply with the dataset license.
+1. **MIMIC IV Clinical Notes Dataset (MIMIC):** The MIMIC Notes dataset contains anonymized patient discharge notes. The dataset can be accessed [here](https://physionet.org/content/mimic-iv-note/2.2/), after obtaining the requisite credentials, signing the Data Use Agreement, and completing the reqired training programs. We note that we do not release actual samples from the data or synthetic generations, to comply with the dataset license.
 
-2. Yelp Open Dataset (YELP): The Yelp dataset contains customer reviews of a large number of businesses. The reviewers are labelled by business category and by review score. The full dataset can be accessed by following the instructions [here](https://github.com/AI-secure/aug-pe/tree/main/data).
+2. **Yelp Open Dataset (YELP):** The Yelp dataset contains customer reviews of a large number of businesses. The reviewers are labelled by business category and by review score. The full dataset can be accessed by following the instructions [here](https://github.com/AI-secure/aug-pe/tree/main/data).
 
-3. Text Anonymization Benchmark (TAB): This dataset contains details about legal cases handled by the European Court for Human Rights. The dataset is available online and can be accessed [here](https://github.com/NorskRegnesentral/text-anonymization-benchmark).
+3. **Text Anonymization Benchmark (TAB):** This dataset contains details about legal cases handled by the European Court for Human Rights. The dataset is available online and can be accessed [here](https://github.com/NorskRegnesentral/text-anonymization-benchmark).
 
 ---
 
@@ -119,6 +119,8 @@ This creates a `robert_yelp50class_{model}.log` file which logs all reevant eval
 ## Memory and Compute requirements
 
 We note that all scripts and experiments were tested on NVIDIA L40S GPUs with 48GB memory. We note that users attempting to reproduce these experiments on smaller GPUs, may run into out-of-memory errors. To fix this error, users can decrease the value of the `minibatch` argument in each generation script. For example to run the code on a GPU with 24GB RAM, it is recommended to therefore use `minibatch=8` (decrease approximately linearly).
+
+We note that each setting of generation for InvisibleInk takes between 2 to 4 hours to complete. Larger models and baselines take between 8 to 10 hours per setting. The total compute time across all settings (and random seeds) exceeds 4000 GPU hours on an NVIDIA L40S GPUs. 
 
 ---
 
