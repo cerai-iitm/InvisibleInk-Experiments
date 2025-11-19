@@ -63,7 +63,7 @@ pip install -r requirements.txt
 
 The required dataset folders (TAB and YELP) can be downloaded by running the following script:
 ```bash
-gdown https://drive.google.com/drive/folders/1vetnesv9xx0uMYQFcrsEwlG7J9j-zeCT?usp=drive_link -O ./ --folder
+gdown https://drive.google.com/drive/folders/1vetnesv9xx0uMYQFcrsEwlG7J9j-zeCT -O ./ --folder
 ```
 The above code downloads the YELP and TAB datasets from [this drive folder](https://drive.google.com/drive/folders/1vetnesv9xx0uMYQFcrsEwlG7J9j-zeCT?usp=drive_link) and also creates an empty folder for the MIMIC dataset. Users can obtain access to the MIMIC dataset and download it by following the steps described [here](https://physionet.org/content/mimic-iv-note/2.2/). After downloading the dataset and unzipping, the `discharge.csv` file should be placed within the `./data/mimic/` folder before running the code that follows.
 
