@@ -54,7 +54,7 @@ conda activate invink-expts
 
 Further, to install all required python packages using pip run the following:
 ```bash
-pip install -r requirement.txt
+pip install -r requirements.txt
 ```
 
 ---
