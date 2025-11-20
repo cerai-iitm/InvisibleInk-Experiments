@@ -13,10 +13,10 @@ dependencies:
       - numpy==2.2.4
       - pandas==2.2.3
       - pip==25.0.1
+      - accelerate==1.5.2
       - scikit-learn==1.6.1
       - scipy==1.15.2
       - sentence-transformers==3.4.1
-      - shutilwhich==1.1.0
       - torch==2.6.0
       - tqdm==4.67.1
       - transformers==4.57.0

@@ -32,6 +32,7 @@ The codebase is written entirely in Python. Important dependencies are listed be
 - Pytorch >= 2.6.0
 - Huggingface Transformers >= 4.57.0
 - sentence-transformers >= 3.4.1
+- accelerate >=1.5.2
 
 We recommend using a [conda environment](https://www.anaconda.com/docs/getting-started/miniconda/main) with Python 3.13. Further instructions are given below.
 
@@ -77,6 +78,14 @@ This creates the required datasets which are used for synthetic data generation 
 ---
 
 ## Code Execution
+
+We note that it is necessary to set the huggingface access token in the runtime environment prior to code execution. Users may follow the steps given [here]() to obtain their huggingface access token (a read only token should suffice). To set the login token in the environment run the following code block:
+
+```bash
+export HF_TOKEN="add_token_here"
+```
+
+Users may also make this change permanent by writing the above line to the `.bashrc` file but we recommend ample caution while making any permanent changes to the `.bashrc` file.
 
 To execute all the scripts for private synthetic text generation, run the following scripts:
 
