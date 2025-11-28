@@ -19,7 +19,8 @@ Our paper introduces InvisibleInk, a highly scalable compute-efficient framework
 
 The repository contains scripts for private text generation and evaluation to reproduce all major results, presented in the paper. The rest of the README describes how to access the datasets used in this paper, install required libraries and generate private synthetic text.
 
-**Standalone Package:** InvisibleInk is now available as a standalone Python package, installable via `pip install invink`! Check out the project repository [here](https://github.com/cerai-iitm/invisibleink).
+### InvisibleInk is now available as a standalone Python package!!
+Check out the project repository [here](https://github.com/cerai-iitm/invisibleink) or install it via `pip install invink`! 
 
 ---
 
